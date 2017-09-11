@@ -3,6 +3,28 @@
 # into two groups:
 #   - swarm_manager_operational (swarm is running and active)
 #   - swarm_manager_bootstrap (host needs to be joined to the cluster)
+
+
+
+# Install pip and docker-py, the library used for
+# gathering docker facts in ansible
+- hosts:
+    - manager
+    - worker
+  become: true
+  tasks:
+    - name: Install pip
+      apt:
+        name: python-pip
+
+    - name: Install docker-py
+      pip:
+        name: docker-py
+  roles:
+    - docker
+
+
+
 - hosts: manager
   become: true
   tasks:
