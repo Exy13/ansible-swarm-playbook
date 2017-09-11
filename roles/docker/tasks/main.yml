@@ -1,0 +1,35 @@
+---
+# tasks file for docker.io
+
+- name: Install apt-transport-https
+  apt:
+    name: apt-transport-https
+    state: present
+
+- name: Install Apt Key for docker repo
+  apt_key:
+    keyserver: hkp://p80.pool.sks-keyservers.net:80
+    id: 58118E89F3A912897C070ADBF76221572C52609D
+
+- name: Add Repository
+  apt_repository:
+    repo: 'deb https://apt.dockerproject.org/repo debian-stretch main'
+    state: present
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: docker-engine
+    state: present
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Ensure /etc/systemd/system/docker.service.d exists
+  file: path=/etc/systemd/system/docker.service.d state=directory
+
+- name: Enable Docker on tcp:4243
+  copy:
+    src: docker.service.override.conf
+    dest: /etc/systemd/system/docker.service.d/override.conf
+  notify:
+    - Restart docker
