@@ -27,6 +27,8 @@
 
 - hosts: manager
   become: true
+  vars_files: 
+   - group_vars/all.yml
   tasks:
     - name: load docker info as facts
       docker_info_facts:
@@ -53,6 +55,8 @@
 #   - swarm_worker_bootstrap (host needs to be joined to the cluster)
 - hosts: worker
   become: true
+  vars_files: 
+   - group_vars/all.yml
   tasks:
     - name: load docker info as facts
       docker_info_facts:
@@ -78,6 +82,8 @@
 # then add it to the swarm_manager_operational group
 - hosts: swarm_manager_bootstrap[0]
   become: true
+  vars_files: 
+   - group_vars/all.yml
   tasks:
     - name: initialize swarm cluster
       shell: >
@@ -97,6 +103,8 @@
 # the swarm port 2377
 - hosts: swarm_manager_operational[0]
   become: true
+  vars_files: 
+   - group_vars/all.yml
   vars:
     iface: "{{ swarm_iface | default('eth0') }}"
   tasks:
@@ -117,6 +125,8 @@
 # join the hosts not yet initialized to the swarm cluster
 - hosts: swarm_manager_bootstrap:!swarm_manager_operational
   become: true
+  vars_files: 
+   - group_vars/all.yml
   vars:
     token: "{{ hostvars[groups['swarm_manager_operational'][0]]['swarm_manager_token']['stdout'] }}"
   tasks:
@@ -130,6 +140,8 @@
 # join the remaining workers to the swarm cluster
 - hosts: swarm_worker_bootstrap
   become: true
+  vars_files: 
+   - group_vars/all.yml
   vars:
     token: "{{ hostvars[groups['swarm_manager_operational'][0]]['swarm_worker_token']['stdout'] }}"
   tasks:
